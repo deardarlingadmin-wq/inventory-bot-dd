@@ -1,4 +1,5 @@
-from flask import Flask, request
+
+from flask import Flask, request, Response
 from twilio.twiml.messaging_response import MessagingResponse
 
 app = Flask(__name__)
@@ -11,17 +12,16 @@ def home():
 def whatsapp():
     incoming_msg = request.form.get("Body", "").strip()
 
+    print(f"Received WhatsApp message: {incoming_msg}", flush=True)
+
     response = MessagingResponse()
+    response.message(
+        f"Dear Darling Inventory Bot received: {incoming_msg}"
+    )
 
-    if incoming_msg:
-        response.message(
-            f"Dear Darling Inventory Bot received: {incoming_msg}"
-        )
-    else:
-        response.message("I received your message.")
+    print(f"Sending TwiML: {response}", flush=True)
 
-    return str(response)
-
+    return Response(str(response), mimetype="text/xml")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)
